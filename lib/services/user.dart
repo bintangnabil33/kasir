@@ -43,39 +43,37 @@ class UserService {
   }
 
   /// ===================== LOGIN =====================
-Future<ResponseDataMap> loginUser(Map<String, dynamic> body) async {
-  final uri = Uri.parse("${url.BaseUrl}/auth/login");
-  final response = await http.post(uri, body: body);
+  Future<ResponseDataMap> loginUser(Map<String, dynamic> body) async {
+    final uri = Uri.parse("${url.BaseUrl}/auth/login");
+    final response = await http.post(uri, body: body);
 
-  final jsonData = json.decode(response.body);
+    final jsonData = json.decode(response.body);
+   // DEBUGGING
+    if (response.statusCode == 200 && jsonData["status"] == true) {
+      final user = jsonData["user"]; // ✅ SESUAI BACKEND
 
-  if (response.statusCode == 200 && jsonData["status"] == true) {
-    final user = jsonData["user"]; // ✅ SESUAI BACKEND
+      UserLogin userLogin = UserLogin(
+        status: true,
+        token: jsonData["token"],
+        id: user["id"],
+        name: user["nama_user"], // ✅ FIX
+        email: user["email"],
+        role: user["role"],
+        message: jsonData["message"],
+      );
 
-    UserLogin userLogin = UserLogin(
-      status: true,
-      token: jsonData["token"],
-      id: user["id"],
-      name: user["nama_user"], // ✅ FIX
-      email: user["email"],
-      role: user["role"],
-      message: jsonData["message"],
-    );
-
-    await userLogin.prefs();
+      await userLogin.prefs();
+      
+      return ResponseDataMap(
+        status: true,
+        message: jsonData["message"],
+        data: userLogin,
+      );
+    }
 
     return ResponseDataMap(
-      status: true,
-      message: jsonData["message"],
-      data: userLogin,
+      status: false,
+      message: jsonData["message"] ?? "Login gagal",
     );
   }
-
-  return ResponseDataMap(
-    status: false,
-    message: jsonData["message"] ?? "Login gagal",
-  );
-}
-
-
 }

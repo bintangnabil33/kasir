@@ -31,8 +31,7 @@ class _LoginViewState extends State<LoginView> {
       suffixIcon: suffixIcon,
       filled: true,
       fillColor: Colors.grey.shade100,
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide.none,
@@ -106,8 +105,10 @@ class _LoginViewState extends State<LoginView> {
                         TextFormField(
                           controller: email,
                           keyboardType: TextInputType.emailAddress,
-                          decoration:
-                              elegantInput("Email", Icons.email_outlined),
+                          decoration: elegantInput(
+                            "Email",
+                            Icons.email_outlined,
+                          ),
                           validator: (v) =>
                               v!.isEmpty ? 'Email wajib diisi' : null,
                         ),
@@ -142,8 +143,7 @@ class _LoginViewState extends State<LoginView> {
                           width: double.infinity,
                           height: 52,
                           child: ElevatedButton(
-                            onPressed:
-                                isLoading ? null : _handleLogin,
+                            onPressed: isLoading ? null : _handleLogin,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFE50914),
                               shape: RoundedRectangleBorder(
@@ -227,8 +227,7 @@ class _LoginViewState extends State<LoginView> {
       }
     } catch (e) {
       debugPrint("LOGIN ERROR: $e");
-      AlertMessage()
-          .showAlert(context, "Terjadi kesalahan saat login", false);
+      AlertMessage().showAlert(context, "Terjadi kesalahan saat login", false);
     } finally {
       if (mounted) setState(() => isLoading = false);
     }

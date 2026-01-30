@@ -17,7 +17,7 @@ class _RegisterUserViewState extends State<RegisterUserView> {
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
 
-  List<String> roleChoice = ["Admin", "User"];
+  List<String> roleChoice = ["Admin", "kasir"];
   String? role;
 
   bool isLoading = false;

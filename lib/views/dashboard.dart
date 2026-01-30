@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kasir/models/user_login.dart';
+import 'package:kasir/widgets/bottom_nav.dart';
 
 class DashboardView extends StatefulWidget {
   const DashboardView({super.key});
@@ -21,28 +22,24 @@ class _DashboardViewState extends State<DashboardView> {
     getUserLogin();
   }
 
-  // ================= CEK LOGIN =================
   Future<void> getUserLogin() async {
     final user = await userLogin.getUserLogin();
-
     if (!mounted) return;
 
-    if (user.status != true) {
-      setState(() => isLoading = false);
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushReplacementNamed(context, '/login');
-      });
-    } else {
+    if (user.status == true) {
       setState(() {
         nama = user.name;
         role = user.role;
         isLoading = false;
       });
+    } else {
+      setState(() => isLoading = false);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushReplacementNamed(context, '/login');
+      });
     }
   }
 
-  // ================= LOGOUT =================
   Future<void> handleLogout() async {
     await userLogin.logout();
     if (mounted) {
@@ -53,7 +50,7 @@ class _DashboardViewState extends State<DashboardView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: const Color(0xFFF6F6F6),
 
       // ===== APP BAR =====
       appBar: AppBar(
@@ -82,33 +79,70 @@ class _DashboardViewState extends State<DashboardView> {
               child: CircularProgressIndicator(color: Color(0xFFE50914)),
             )
           : SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
+              padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 40),
-
-                  // ===== TITLE =====
-                  const Text(
-                    "Dashboard",
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                  // ===== HEADER CARD =====
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 6,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Halo, ${nama ?? '-'} 👋",
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          "Role: ${role ?? '-'}",
+                          style: const TextStyle(
+                            color: Colors.black54,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    "Ringkasan akun Anda",
-                    style: TextStyle(color: Colors.black54),
+
+                  const SizedBox(height: 24),
+
+                  // ===== SUMMARY =====
+                  Row(
+                    children: [
+                      _summaryCard(
+                        title: "Produk",
+                        value: "120",
+                        icon: Icons.inventory,
+                      ),
+                      const SizedBox(width: 16),
+                      _summaryCard(
+                        title: "Transaksi",
+                        value: "57",
+                        icon: Icons.receipt_long,
+                      ),
+                    ],
                   ),
 
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 24),
 
-                  // ===== CARD USER INFO =====
+                  // ===== ACCOUNT INFO =====
                   Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(22),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
@@ -132,24 +166,25 @@ class _DashboardViewState extends State<DashboardView> {
                           ),
                         ),
                         const SizedBox(height: 16),
-
                         _infoRow("Nama", nama ?? "-"),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 12),
+                        const Divider(),
+                        const SizedBox(height: 12),
                         _infoRow("Role", role ?? "-"),
                       ],
                     ),
                   ),
 
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 32),
 
                   // ===== LOGOUT BUTTON =====
                   SizedBox(
                     width: double.infinity,
-                    height: 50,
+                    height: 44,
                     child: ElevatedButton(
                       onPressed: handleLogout,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFE50914),
+                        backgroundColor: Colors.red.shade400,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -163,36 +198,68 @@ class _DashboardViewState extends State<DashboardView> {
                       ),
                     ),
                   ),
-
-                  const SizedBox(height: 20),
                 ],
               ),
             ),
+
+      // ===== BOTTOM NAV =====
+      bottomNavigationBar: BottomNav(0),
     );
   }
 
-  // ===== HELPER INFO ROW =====
+  // ===== SUMMARY CARD =====
+  Widget _summaryCard({
+    required String title,
+    required String value,
+    required IconData icon,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 6,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: Color(0xFFE50914), size: 32),
+            const SizedBox(height: 16),
+            Text(
+              value,
+              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              title,
+              style: const TextStyle(color: Colors.black54, fontSize: 14),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ===== INFO ROW =====
   Widget _infoRow(String label, String value) {
     return Row(
       children: [
         Expanded(
           flex: 3,
-          child: Text(
-            label,
-            style: const TextStyle(
-              color: Colors.black54,
-              fontSize: 14,
-            ),
-          ),
+          child: Text(label, style: const TextStyle(color: Colors.black54)),
         ),
         Expanded(
           flex: 5,
           child: Text(
             value,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
           ),
         ),
       ],

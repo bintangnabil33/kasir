@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kasir/views/dashboard.dart';
 import 'package:kasir/views/login_view.dart';
+import 'package:kasir/views/produk_view.dart';
+import 'package:kasir/views/transaksi_view.dart';
 import 'package:kasir/views/register.dart';
 
 /// GLOBAL KEY (INI KUNCI UTAMA)
@@ -24,9 +26,11 @@ class MyApp extends StatelessWidget {
 
       initialRoute: '/register',
       routes: {
-        '/register': (context) =>  RegisterUserView(),
-        '/login': (context) =>  LoginView(),
+        '/register': (context) => RegisterUserView(),
+        '/login': (context) => LoginView(),
         '/dashboard': (context) => DashboardView(),
+        '/produk': (context) => ProdukView(),
+        '/transaksi': (context) => TransaksiView(),
       },
     );
   }
