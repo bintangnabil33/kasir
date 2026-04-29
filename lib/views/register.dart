@@ -43,8 +43,7 @@ class _RegisterUserViewState extends State<RegisterUserView> {
       suffixIcon: suffixIcon,
       filled: true,
       fillColor: Colors.grey.shade100,
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide.none,
@@ -117,8 +116,10 @@ class _RegisterUserViewState extends State<RegisterUserView> {
                       children: [
                         TextFormField(
                           controller: name,
-                          decoration:
-                              elegantInput("Nama Lengkap", Icons.person),
+                          decoration: elegantInput(
+                            "Nama Lengkap",
+                            Icons.person,
+                          ),
                           validator: (v) =>
                               v!.isEmpty ? 'Nama wajib diisi' : null,
                         ),
@@ -127,8 +128,10 @@ class _RegisterUserViewState extends State<RegisterUserView> {
                         TextFormField(
                           controller: email,
                           keyboardType: TextInputType.emailAddress,
-                          decoration:
-                              elegantInput("Email", Icons.email_outlined),
+                          decoration: elegantInput(
+                            "Email",
+                            Icons.email_outlined,
+                          ),
                           validator: (v) =>
                               v!.isEmpty ? 'Email wajib diisi' : null,
                         ),
@@ -136,14 +139,14 @@ class _RegisterUserViewState extends State<RegisterUserView> {
 
                         DropdownButtonFormField<String>(
                           value: role,
-                          decoration:
-                              elegantInput("Role", Icons.admin_panel_settings),
+                          decoration: elegantInput(
+                            "Role",
+                            Icons.admin_panel_settings,
+                          ),
                           items: roleChoice
                               .map(
-                                (r) => DropdownMenuItem(
-                                  value: r,
-                                  child: Text(r),
-                                ),
+                                (r) =>
+                                    DropdownMenuItem(value: r, child: Text(r)),
                               )
                               .toList(),
                           onChanged: (v) => setState(() => role = v),
@@ -158,11 +161,14 @@ class _RegisterUserViewState extends State<RegisterUserView> {
                             "Password",
                             Icons.lock_outline,
                             suffixIcon: IconButton(
-                              icon: Icon(isPasswordVisible
-                                  ? Icons.visibility
-                                  : Icons.visibility_off),
+                              icon: Icon(
+                                isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
                               onPressed: () => setState(
-                                  () => isPasswordVisible = !isPasswordVisible),
+                                () => isPasswordVisible = !isPasswordVisible,
+                              ),
                             ),
                           ),
                           validator: (v) =>
@@ -175,8 +181,7 @@ class _RegisterUserViewState extends State<RegisterUserView> {
                           width: double.infinity,
                           height: 52,
                           child: ElevatedButton(
-                            onPressed:
-                                isLoading ? null : _handleRegister,
+                            onPressed: isLoading ? null : _handleRegister,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFE50914),
                               shape: RoundedRectangleBorder(
@@ -254,9 +259,14 @@ class _RegisterUserViewState extends State<RegisterUserView> {
           Navigator.pushReplacementNamed(context, '/login');
         });
       } else {
-        AlertMessage().showAlert(context, result.message, false);
+        AlertMessage().showAlert(
+          context,
+          result.message ?? "Register gagal",
+          false,
+        );
       }
     } catch (e) {
+      print(e.toString());
       AlertMessage().showAlert(context, "Terjadi kesalahan", false);
     } finally {
       if (mounted) setState(() => isLoading = false);

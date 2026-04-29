@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.kasir"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = flutterndk.version
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

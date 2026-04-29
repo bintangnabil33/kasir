@@ -25,7 +25,7 @@ class _DashboardViewState extends State<DashboardView> {
   Future<void> getUserLogin() async {
     final user = await userLogin.getUserLogin();
     if (!mounted) return;
-
+    print("USER LOGIN: ${user}");
     if (user.status == true) {
       setState(() {
         nama = user.name;
@@ -34,9 +34,9 @@ class _DashboardViewState extends State<DashboardView> {
       });
     } else {
       setState(() => isLoading = false);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushReplacementNamed(context, '/login');
-      });
+      // WidgetsBinding.instance.addPostFrameCallback((_) {
+      //   Navigator.pushReplacementNamed(context, '/login');
+      // });
     }
   }
 

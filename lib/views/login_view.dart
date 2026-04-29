@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kasir/services/user.dart';
 import 'package:kasir/widgets/alert.dart';
+import 'package:kasir/models/user_login.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -65,7 +66,7 @@ class _LoginViewState extends State<LoginView> {
               children: [
                 const SizedBox(height: 40),
 
-                // ===== TITLE =====
+                // TITLE
                 const Text(
                   "Sir Kasir",
                   style: TextStyle(
@@ -75,7 +76,9 @@ class _LoginViewState extends State<LoginView> {
                     letterSpacing: 1,
                   ),
                 ),
+
                 const SizedBox(height: 8),
+
                 const Text(
                   "Login to your account",
                   style: TextStyle(color: Colors.white70),
@@ -83,7 +86,7 @@ class _LoginViewState extends State<LoginView> {
 
                 const SizedBox(height: 32),
 
-                // ===== CARD =====
+                // CARD LOGIN
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
@@ -112,6 +115,7 @@ class _LoginViewState extends State<LoginView> {
                           validator: (v) =>
                               v!.isEmpty ? 'Email wajib diisi' : null,
                         ),
+
                         const SizedBox(height: 16),
 
                         // PASSWORD
@@ -138,7 +142,7 @@ class _LoginViewState extends State<LoginView> {
 
                         const SizedBox(height: 28),
 
-                        // BUTTON
+                        // BUTTON LOGIN
                         SizedBox(
                           width: double.infinity,
                           height: 52,
@@ -194,7 +198,7 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  // ================= LOGIC (TETAP) =================
+  // ================= LOGIC LOGIN =================
   Future<void> _handleLogin() async {
     if (!formKey.currentState!.validate()) return;
 
@@ -209,15 +213,20 @@ class _LoginViewState extends State<LoginView> {
       if (!mounted) return;
 
       if (result.status == true) {
-        AlertMessage().showAlert(
-          context,
-          result.message ?? "Login berhasil",
-          true,
-        );
+        // 🔥 Ambil langsung dari root
+        final token = result.data["token"];
+        final userData = result.data["user"];
 
-        Future.delayed(const Duration(milliseconds: 800), () {
-          Navigator.pushReplacementNamed(context, '/dashboard');
-        });
+        await UserLogin(
+          status: true,
+          token: token,
+          id: userData["id"],
+          name: userData["nama_user"],
+          email: userData["email"],
+          role: userData["role"],
+        ).prefs();
+
+        Navigator.pushReplacementNamed(context, '/dashboard');
       } else {
         AlertMessage().showAlert(
           context,
@@ -226,10 +235,12 @@ class _LoginViewState extends State<LoginView> {
         );
       }
     } catch (e) {
-      debugPrint("LOGIN ERROR: $e");
-      AlertMessage().showAlert(context, "Terjadi kesalahan saat login", false);
-    } finally {
-      if (mounted) setState(() => isLoading = false);
+      print("LOGIN ERROR: $e"); // tambahkan ini untuk debug
+      AlertMessage().showAlert(context, "Terjadi kesalahan", false);
+    }
+
+    if (mounted) {
+      setState(() => isLoading = false);
     }
   }
 }

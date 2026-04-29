@@ -1,79 +1,66 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:kasir/models/response_data_map.dart';
-import 'package:kasir/models/user_login.dart';
-import 'package:kasir/services/url.dart' as url;
+import '../models/response_data_map.dart';
+import 'url.dart';
 
 class UserService {
-  /// ===================== REGISTER =====================
+  // ================= REGISTER =================
   Future<ResponseDataMap> registerUser(Map<String, dynamic> body) async {
-    final uri = Uri.parse("${url.BaseUrl}/auth/register");
+    final uri = Uri.parse(BaseUrl + "/auth/register");
 
     final response = await http.post(uri, body: body);
+    print("REGISTER BODY: $body");
+    print("REGISTER RESPONSE: ${response.body}");
+    final jsonData = json.decode(response.body);
 
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-
       if (jsonData["status"] == true) {
-        return ResponseDataMap(
-          status: true,
-          message: jsonData["message"] ?? "Register berhasil",
-          data: jsonData,
-        );
+        return ResponseDataMap(status: true, message: jsonData["message"]);
       } else {
-        String message = "";
+        // Handle error validation (email sudah dipakai dll)
+        String errorMessage = "Register gagal";
 
-        // handle validasi backend (laravel-style)
         if (jsonData["message"] is Map) {
-          jsonData["message"].forEach((key, value) {
-            message += "${value[0]}\n";
-          });
-        } else {
-          message = jsonData["message"].toString();
+          final msgMap = jsonData["message"] as Map;
+          errorMessage = msgMap.values.first.first.toString();
         }
 
-        return ResponseDataMap(status: false, message: message);
+        return ResponseDataMap(status: false, message: errorMessage);
       }
-    } else {
-      return ResponseDataMap(
-        status: false,
-        message: "Gagal register (Code ${response.statusCode})",
-      );
     }
+
+    return ResponseDataMap(status: false, message: "Server error");
   }
 
-  /// ===================== LOGIN =====================
+  // ================= LOGIN =================
   Future<ResponseDataMap> loginUser(Map<String, dynamic> body) async {
-    final uri = Uri.parse("${url.BaseUrl}/auth/login");
+    final uri = Uri.parse(BaseUrl + "/auth/login");
+
     final response = await http.post(uri, body: body);
 
-    final jsonData = json.decode(response.body);
-   // DEBUGGING
-    if (response.statusCode == 200 && jsonData["status"] == true) {
-      final user = jsonData["user"]; // ✅ SESUAI BACKEND
+    print("LOGIN STATUS: ${response.statusCode}");
+    print("LOGIN BODY: ${response.body}");
 
-      UserLogin userLogin = UserLogin(
-        status: true,
-        token: jsonData["token"],
-        id: user["id"],
-        name: user["nama_user"], // ✅ FIX
-        email: user["email"],
-        role: user["role"],
-        message: jsonData["message"],
-      );
-
-      await userLogin.prefs();
-      
+    if (response.statusCode != 200) {
       return ResponseDataMap(
-        status: true,
-        message: jsonData["message"],
-        data: userLogin,
+        status: false,
+        message: "Server Error ${response.statusCode}",
       );
     }
 
+    if (response.body.isEmpty) {
+      return ResponseDataMap(
+        status: false,
+        message: "Response kosong dari server",
+      );
+    }
+
+    final jsonData = jsonDecode(response.body);
+    
     return ResponseDataMap(
-      status: false,
+      status: jsonData["status"] ?? false,
       message: jsonData["message"] ?? "Login gagal",
+      data: jsonData,
     );
   }
 }

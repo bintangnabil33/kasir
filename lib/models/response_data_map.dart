@@ -1,11 +1,11 @@
-class ResponseDataMap<Map> {
+class ResponseDataMap {
   bool status;
-  String message;
-  Map? data;
+  String? message;
+  dynamic data;
 
   ResponseDataMap({
     required this.status,
-    required this.message,
+    this.message,
     this.data,
   });
 }

@@ -1,51 +1,50 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserLogin {
-  bool status;
+  bool? status;
   String? token;
-  String? role;
-  String? message;
   int? id;
   String? name;
   String? email;
+  String? role;
 
   UserLogin({
-    this.status = false,
+    this.status,
     this.token,
-    this.role,
-    this.message,
     this.id,
     this.name,
     this.email,
+    this.role,
   });
 
-  // SIMPAN SESSION
+  // ===== SIMPAN LOGIN =====
   Future<void> prefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('status', status);
-    await prefs.setString('token', token ?? '');
-    await prefs.setString('role', role ?? '');
-    await prefs.setInt('id', id ?? 0);
-    await prefs.setString('name', name ?? '');
-    await prefs.setString('email', email ?? '');
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    await pref.setBool("status", status ?? false);
+    await pref.setString("token", token ?? "");
+    await pref.setInt("id", id ?? 0);
+    await pref.setString("name", name ?? "");
+    await pref.setString("email", email ?? "");
+    await pref.setString("role", role ?? "");
   }
 
-  // AMBIL SESSION
+  // ===== AMBIL DATA LOGIN =====
   Future<UserLogin> getUserLogin() async {
-    final prefs = await SharedPreferences.getInstance();
+    SharedPreferences pref = await SharedPreferences.getInstance();
+
     return UserLogin(
-      status: prefs.getBool('status') ?? false,
-      token: prefs.getString('token'),
-      role: prefs.getString('role'),
-      id: prefs.getInt('id'),
-      name: prefs.getString('name'),
-      email: prefs.getString('email'),
+      status: pref.getBool("status") ?? false,
+      token: pref.getString("token"),
+      id: pref.getInt("id"),
+      name: pref.getString("name"),
+      email: pref.getString("email"),
+      role: pref.getString("role"),
     );
   }
 
-  // LOGOUT
+  // ===== LOGOUT =====
   Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    await pref.clear();
   }
 }

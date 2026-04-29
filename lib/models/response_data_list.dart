@@ -1,6 +1,7 @@
 class ResponseDataList {
-  bool status;
-  String message;
-  List? data;
-  ResponseDataList({required this.status, required this.message, this.data});
+  bool? status;
+  String? message;
+  List<dynamic>? data;
+
+  ResponseDataList({this.status, this.message, this.data});
 }
