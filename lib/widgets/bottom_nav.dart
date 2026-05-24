@@ -3,7 +3,6 @@ import 'package:kasir/models/user_login.dart';
 
 class BottomNav extends StatefulWidget {
   final int activePage;
-
   const BottomNav(this.activePage, {super.key});
 
   @override
@@ -15,57 +14,39 @@ class _BottomNavState extends State<BottomNav> {
   String? role;
   bool isChecking = true;
 
-  // ================= GET DATA LOGIN =================
-  Future<void> getDataLogin() async {
-    var user = await userLogin.getUserLogin();
-
-    if (!mounted) return;
-
-    if (user.status == true) {
-      setState(() {
-        role = user.role;
-        isChecking = false;
-      });
-    } else {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        '/login',
-        (route) => false,
-      );
-    }
-  }
-
   @override
   void initState() {
     super.initState();
     getDataLogin();
   }
 
-  // ================= NAVIGATION =================
+  Future<void> getDataLogin() async {
+    var user = await userLogin.getUserLogin();
+    if (!mounted) return;
+    if (user.status == true) {
+      setState(() { role = user.role; isChecking = false; });
+    } else {
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+    }
+  }
+
   void getLink(int index) {
     if (role == "admin") {
-      if (index == 0) {
-        Navigator.pushReplacementNamed(context, '/dashboard');
-      } else if (index == 1) {
-        Navigator.pushReplacementNamed(context, '/produk');
-      }
-    } else if (role == "kasir") {
-      if (index == 0) {
-        Navigator.pushReplacementNamed(context, '/dashboard');
-      } else if (index == 1) {
-        Navigator.pushReplacementNamed(context, '/transaksi');
-      }
+      if (index == 0) Navigator.pushReplacementNamed(context, '/dashboard');
+      else if (index == 1) Navigator.pushReplacementNamed(context, '/produk');
+    } else {
+      // user
+      if (index == 0) Navigator.pushReplacementNamed(context, '/dashboard');
+      else if (index == 1) Navigator.pushReplacementNamed(context, '/transaksi');
+      else if (index == 2) Navigator.pushReplacementNamed(context, '/history');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isChecking) return const SizedBox();
 
-    // Saat masih cek login, jangan tampilkan apa-apa dulu
-    if (isChecking) {
-      return const SizedBox();
-    }
-
+    // ADMIN: Dashboard | Produk
     if (role == "admin") {
       return BottomNavigationBar(
         selectedItemColor: Colors.redAccent,
@@ -73,37 +54,23 @@ class _BottomNavState extends State<BottomNav> {
         currentIndex: widget.activePage,
         onTap: getLink,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.production_quantity_limits_sharp),
-            label: 'Produk',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
+          BottomNavigationBarItem(icon: Icon(Icons.inventory), label: 'Produk'),
         ],
       );
     }
 
-    if (role == "kasir") {
-      return BottomNavigationBar(
-        selectedItemColor: Colors.redAccent,
-        unselectedItemColor: Colors.grey,
-        currentIndex: widget.activePage,
-        onTap: getLink,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.message),
-            label: 'Pesan',
-          ),
-        ],
-      );
-    }
-
-    return const SizedBox();
+    // USER: Dashboard | Pesan | History
+    return BottomNavigationBar(
+      selectedItemColor: Colors.redAccent,
+      unselectedItemColor: Colors.grey,
+      currentIndex: widget.activePage,
+      onTap: getLink,
+      items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
+        BottomNavigationBarItem(icon: Icon(Icons.shopping_bag), label: 'Pesan'),
+        BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
+      ],
+    );
   }
 }

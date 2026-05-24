@@ -13,11 +13,12 @@ class _RegisterUserViewState extends State<RegisterUserView> {
   final UserService user = UserService();
   final formKey = GlobalKey<FormState>();
 
-  final TextEditingController name = TextEditingController();
-  final TextEditingController email = TextEditingController();
+  final TextEditingController name     = TextEditingController();
+  final TextEditingController email    = TextEditingController();
   final TextEditingController password = TextEditingController();
 
-  List<String> roleChoice = ["Admin", "kasir"];
+  // Hanya 2 role: Admin dan User
+  List<String> roleChoice = ["admin", "user"];
   String? role;
 
   bool isLoading = false;
@@ -31,12 +32,7 @@ class _RegisterUserViewState extends State<RegisterUserView> {
     super.dispose();
   }
 
-  // ================= INPUT STYLE =================
-  InputDecoration elegantInput(
-    String label,
-    IconData icon, {
-    Widget? suffixIcon,
-  }) {
+  InputDecoration elegantInput(String label, IconData icon, {Widget? suffixIcon}) {
     return InputDecoration(
       labelText: label,
       prefixIcon: Icon(icon),
@@ -59,7 +55,6 @@ class _RegisterUserViewState extends State<RegisterUserView> {
     );
   }
 
-  // ================= UI =================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,106 +72,76 @@ class _RegisterUserViewState extends State<RegisterUserView> {
             child: Column(
               children: [
                 const SizedBox(height: 30),
-
-                // ===== LOGO / TITLE =====
-                const Text(
-                  "Sir Kasir",
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: 1,
-                  ),
-                ),
+                const Text("Sir Kasir",
+                    style: TextStyle(
+                        fontSize: 28, fontWeight: FontWeight.bold,
+                        color: Colors.white, letterSpacing: 1)),
                 const SizedBox(height: 8),
-                const Text(
-                  "Create your account",
-                  style: TextStyle(color: Colors.white70),
-                ),
-
+                const Text("Create your account",
+                    style: TextStyle(color: Colors.white70)),
                 const SizedBox(height: 30),
 
-                // ===== CARD FORM =====
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 12,
-                        offset: Offset(0, 6),
-                      ),
+                      BoxShadow(color: Colors.black12, blurRadius: 12, offset: Offset(0, 6))
                     ],
                   ),
                   child: Form(
                     key: formKey,
                     child: Column(
                       children: [
+                        // Nama
                         TextFormField(
                           controller: name,
-                          decoration: elegantInput(
-                            "Nama Lengkap",
-                            Icons.person,
-                          ),
-                          validator: (v) =>
-                              v!.isEmpty ? 'Nama wajib diisi' : null,
+                          decoration: elegantInput("Nama Lengkap", Icons.person),
+                          validator: (v) => v!.isEmpty ? 'Nama wajib diisi' : null,
                         ),
                         const SizedBox(height: 16),
 
+                        // Email
                         TextFormField(
                           controller: email,
                           keyboardType: TextInputType.emailAddress,
-                          decoration: elegantInput(
-                            "Email",
-                            Icons.email_outlined,
-                          ),
-                          validator: (v) =>
-                              v!.isEmpty ? 'Email wajib diisi' : null,
+                          decoration: elegantInput("Email", Icons.email_outlined),
+                          validator: (v) => v!.isEmpty ? 'Email wajib diisi' : null,
                         ),
                         const SizedBox(height: 16),
 
+                        // Role dropdown — hanya admin & user
                         DropdownButtonFormField<String>(
                           value: role,
-                          decoration: elegantInput(
-                            "Role",
-                            Icons.admin_panel_settings,
-                          ),
-                          items: roleChoice
-                              .map(
-                                (r) =>
-                                    DropdownMenuItem(value: r, child: Text(r)),
-                              )
-                              .toList(),
+                          decoration: elegantInput("Role", Icons.admin_panel_settings),
+                          items: roleChoice.map((r) => DropdownMenuItem(
+                            value: r,
+                            child: Text(r == "admin" ? "Admin" : "User"),
+                          )).toList(),
                           onChanged: (v) => setState(() => role = v),
                           validator: (v) => v == null ? 'Pilih role' : null,
                         ),
                         const SizedBox(height: 16),
 
+                        // Password
                         TextFormField(
                           controller: password,
                           obscureText: !isPasswordVisible,
                           decoration: elegantInput(
-                            "Password",
-                            Icons.lock_outline,
+                            "Password", Icons.lock_outline,
                             suffixIcon: IconButton(
-                              icon: Icon(
-                                isPasswordVisible
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                              ),
+                              icon: Icon(isPasswordVisible
+                                  ? Icons.visibility : Icons.visibility_off),
                               onPressed: () => setState(
-                                () => isPasswordVisible = !isPasswordVisible,
-                              ),
+                                  () => isPasswordVisible = !isPasswordVisible),
                             ),
                           ),
-                          validator: (v) =>
-                              v!.length < 6 ? 'Minimal 6 karakter' : null,
+                          validator: (v) => v!.length < 6 ? 'Minimal 6 karakter' : null,
                         ),
                         const SizedBox(height: 28),
 
-                        // ===== BUTTON =====
+                        // Tombol Register
                         SizedBox(
                           width: double.infinity,
                           height: 52,
@@ -185,23 +150,16 @@ class _RegisterUserViewState extends State<RegisterUserView> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFE50914),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
+                                  borderRadius: BorderRadius.circular(14)),
                               elevation: 4,
                             ),
                             child: isLoading
                                 ? const CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2.5,
-                                  )
-                                : const Text(
-                                    "REGISTER",
+                                    color: Colors.white, strokeWidth: 2.5)
+                                : const Text("REGISTER",
                                     style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 1,
-                                      fontSize: 16,
-                                    ),
-                                  ),
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1, fontSize: 16)),
                           ),
                         ),
                       ],
@@ -210,19 +168,10 @@ class _RegisterUserViewState extends State<RegisterUserView> {
                 ),
 
                 const SizedBox(height: 20),
-
-                // ===== LOGIN LINK =====
                 TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/login');
-                  },
-                  child: const Text(
-                    "Sudah punya akun? Login",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
+                  child: const Text("Sudah punya akun? Login",
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
                 ),
               ],
             ),
@@ -232,41 +181,29 @@ class _RegisterUserViewState extends State<RegisterUserView> {
     );
   }
 
-  // ================= LOGIC (TETAP) =================
   Future<void> _handleRegister() async {
     if (!formKey.currentState!.validate()) return;
-
     setState(() => isLoading = true);
 
     try {
       final result = await user.registerUser({
-        "name": name.text,
-        "email": email.text,
-        "role": role!.toLowerCase(),
+        "name":     name.text,
+        "email":    email.text,
+        "role":     role!,
         "password": password.text,
       });
 
       if (!mounted) return;
 
       if (result.status == true) {
-        AlertMessage().showAlert(
-          context,
-          "Register berhasil, silakan login",
-          true,
-        );
-
+        AlertMessage().showAlert(context, "Register berhasil, silakan login", true);
         Future.delayed(const Duration(milliseconds: 800), () {
           Navigator.pushReplacementNamed(context, '/login');
         });
       } else {
-        AlertMessage().showAlert(
-          context,
-          result.message ?? "Register gagal",
-          false,
-        );
+        AlertMessage().showAlert(context, result.message ?? "Register gagal", false);
       }
     } catch (e) {
-      print(e.toString());
       AlertMessage().showAlert(context, "Terjadi kesalahan", false);
     } finally {
       if (mounted) setState(() => isLoading = false);
